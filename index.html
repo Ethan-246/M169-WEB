@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nasdaq-100 · QQQ</title>
+<style>
+@property --n{syntax:"<integer>";initial-value:0;inherits:false}
+:root{--bg:#070b14;--card:#101828;--text:#eaf0ff;--muted:#8fa0c2;--a:#22d3ee;--b:#8b5cf6;--up:#34d399;--down:#f87171;--line:#1e2a44}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+nav{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:rgba(7,11,20,.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.logo{font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
+nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-weight:600;transition:.2s}
+nav a:hover{color:var(--a)}
+
+/* Hero mit schwebenden Farbflächen */
+.hero{position:relative;text-align:center;padding:110px 20px 90px;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.45;animation:float 12s ease-in-out infinite}
+.b1{width:340px;height:340px;background:var(--a);top:-80px;left:8%}
+.b2{width:300px;height:300px;background:var(--b);bottom:-90px;right:10%;animation-delay:-5s}
+.b3{width:200px;height:200px;background:var(--up);top:40%;left:55%;animation-delay:-8s;opacity:.25}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-35px) scale(1.15)}}
+.hero>*:not(.blob){position:relative}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:14px;animation:rise .8s both}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--up);animation:puls 1.6s infinite}
+@keyframes puls{0%{box-shadow:0 0 0 0 rgba(52,211,153,.7)}100%{box-shadow:0 0 0 12px rgba(52,211,153,0)}}
+h1{font-size:clamp(54px,14vw,128px);margin:18px 0 6px;line-height:1;font-weight:900;background:linear-gradient(90deg,var(--a),var(--b),var(--a));background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:rise .9s .1s both,shine 5s linear infinite}
+@keyframes shine{to{background-position:200% center}}
+.hero p{max-width:560px;margin:0 auto 26px;color:var(--muted);animation:rise 1s .25s both}
+.btn{display:inline-block;padding:13px 28px;border-radius:999px;background:linear-gradient(90deg,var(--a),var(--b));color:#041018;font-weight:800;text-decoration:none;transition:.25s;animation:rise 1s .4s both}
+.btn:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 10px 30px rgba(34,211,238,.35)}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+
+/* Laufband */
+.ticker{border-block:1px solid var(--line);background:var(--card);overflow:hidden;white-space:nowrap}
+.ticker div{display:inline-block;padding:12px 0;animation:lauf 28s linear infinite}
+.ticker:hover div{animation-play-state:paused}
+.ticker span{margin:0 26px;font-weight:700}
+.ticker .g{color:var(--up)}.ticker .r{color:var(--down)}
+@keyframes lauf{to{transform:translateX(-50%)}}
+
+main{max-width:1000px;margin:0 auto;padding:30px 20px 60px}
+h2{font-size:clamp(24px,4vw,32px);margin:56px 0 8px}
+.sub{color:var(--muted);margin:0 0 20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;transition:.3s;animation:rise .8s both}
+.card:hover{transform:translateY(-6px);border-color:var(--a);box-shadow:0 14px 34px rgba(34,211,238,.12)}
+.card h3{margin:0 0 4px}
+.tag{display:inline-block;font-size:12px;font-weight:800;padding:3px 10px;border-radius:999px;background:var(--line);color:var(--a);margin-bottom:8px}
+.tag.x{color:var(--down)}
+.card:nth-child(2){animation-delay:.1s}.card:nth-child(3){animation-delay:.2s}.card:nth-child(4){animation-delay:.3s}.card:nth-child(5){animation-delay:.4s}
+
+/* Zähler */
+.zahl{font-size:46px;font-weight:900;color:var(--a);line-height:1.1}
+.count{--to:100;counter-reset:n var(--n);animation:zahl 2.4s ease-out forwards}
+.count::after{content:counter(n)}
+@keyframes zahl{to{--n:var(--to)}}
+
+/* Animierte Kurve */
+.chart{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+svg{width:100%;height:auto;display:block}
+.linie{fill:none;stroke:url(#gr);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1400;stroke-dashoffset:1400;animation:zeichne 3.5s ease-out .3s forwards}
+.flaeche{fill:url(#fl);opacity:0;animation:blend 1.5s 2.4s forwards}
+.punkt{fill:var(--a);animation:puls2 1.5s infinite}
+@keyframes zeichne{to{stroke-dashoffset:0}}
+@keyframes blend{to{opacity:1}}
+@keyframes puls2{50%{r:11;opacity:.55}}
+.hinweis{color:var(--muted);font-size:14px;margin:10px 4px 0}
+
+.box{margin-top:50px;padding:20px 22px;border:1px dashed var(--down);border-radius:16px;color:var(--muted);font-size:15px}
+footer{text-align:center;color:var(--muted);font-size:14px;padding:26px;border-top:1px solid var(--line)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.count{--n:var(--to)}.linie{stroke-dashoffset:0}.flaeche{opacity:1}}
+</style>
+</head>
+<body>
+
+<nav><span class="logo">NASDAQ-100</span><div><a href="#was">Was ist das?</a><a href="#kurve">Kurve</a><a href="#familie">Familie</a></div></nav>
+
+<header class="hero">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <span class="badge"><i class="dot"></i> Der Tech-Index im Überblick</span>
+  <h1>QQQ</h1>
+  <p>Ein ETF auf den Nasdaq-100: die 100 grössten nicht-finanziellen Unternehmen der Nasdaq-Börse an einem Ort.</p>
+  <a class="btn" href="#was">Mehr erfahren</a>
+</header>
+
+<div class="ticker"><div>
+  <span>QQQ</span><span>QQQM</span><span class="g">QLD ▲ 2x</span><span class="g">TQQQ ▲ 3x</span><span class="r">SQQQ ▼ −3x</span><span>NDX</span>
+  <span>QQQ</span><span>QQQM</span><span class="g">QLD ▲ 2x</span><span class="g">TQQQ ▲ 3x</span><span class="r">SQQQ ▼ −3x</span><span>NDX</span>
+</div></div>
+
+<main>
+  <h2 id="was">Was ist das?</h2>
+  <p class="sub">Der Invesco QQQ ETF bildet den Nasdaq-100-Index nach und startete im März 1999 als erster ETF auf diesen Index. Fonds und Index werden vierteljährlich neu gewichtet und jährlich neu zusammengestellt.</p>
+  <div class="grid">
+    <div class="card"><div class="zahl"><span class="count" style="--to:100"></span></div>Unternehmen im Index</div>
+    <div class="card"><div class="zahl"><span class="count" style="--to:1999"></span></div>Startjahr von QQQ</div>
+    <div class="card"><div class="zahl"><span class="count" style="--to:4"></span>×</div>Neu gewichtet pro Jahr</div>
+    <div class="card"><div class="zahl"><span class="count" style="--to:1"></span>×</div>Neu zusammengestellt pro Jahr</div>
+  </div>
+
+  <h2 id="kurve">So könnte eine Kurve aussehen</h2>
+  <p class="sub">Eine reine Animation zur Dekoration, keine echten Kursdaten.</p>
+  <div class="chart">
+    <svg viewBox="0 0 800 300" role="img" aria-label="Symbolische Aufwärtskurve">
+      <defs>
+        <linearGradient id="gr" x1="0" x2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient>
+        <linearGradient id="fl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22d3ee" stop-opacity=".35"/><stop offset="1" stop-color="#22d3ee" stop-opacity="0"/></linearGradient>
+      </defs>
+      <g stroke="#1e2a44"><line x1="0" y1="75" x2="800" y2="75"/><line x1="0" y1="150" x2="800" y2="150"/><line x1="0" y1="225" x2="800" y2="225"/></g>
+      <path class="flaeche" d="M20 250 L110 215 L190 235 L280 170 L360 195 L450 120 L530 150 L620 80 L700 105 L780 40 L780 290 L20 290 Z"/>
+      <path class="linie" d="M20 250 L110 215 L190 235 L280 170 L360 195 L450 120 L530 150 L620 80 L700 105 L780 40"/>
+      <circle class="punkt" cx="780" cy="40" r="7"/>
+    </svg>
+    <p class="hinweis">Symbolische Darstellung · keine echten Daten</p>
+  </div>
+
+  <h2 id="familie">Die QQQ-Familie</h2>
+  <p class="sub">Rund um den Nasdaq-100 gibt es mehrere ETFs mit unterschiedlichem Ansatz.</p>
+  <div class="grid">
+    <div class="card"><span class="tag">Standard</span><h3>QQQ</h3><p>Der Klassiker von Invesco, der den Nasdaq-100 nachbildet.</p></div>
+    <div class="card"><span class="tag">Günstiger</span><h3>QQQM</h3><p>Seit Oktober 2020 am Markt, eine günstigere Variante von QQQ.</p></div>
+    <div class="card"><span class="tag">2x Hebel</span><h3>QLD</h3><p>ProShares Ultra QQQ mit zweifacher täglicher Hebelwirkung.</p></div>
+    <div class="card"><span class="tag">3x Hebel</span><h3>TQQQ</h3><p>ProShares UltraPro QQQ mit dreifacher täglicher Hebelwirkung.</p></div>
+    <div class="card"><span class="tag x">3x invers</span><h3>SQQQ</h3><p>ProShares UltraPro Short QQQ, gedacht für den umgekehrten Verlauf.</p></div>
+  </div>
+
+  <div class="box"><b>Hinweis:</b> Diese Seite dient nur zur Information und ist keine Anlageberatung. Gehebelte und inverse ETFs sind sehr riskant und für kurzfristige Zwecke konstruiert.</div>
+</main>
+
+<footer>Infoseite · gebaut nur mit HTML und CSS</footer>
+</body>
+</html>
